@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>邀请彭诗语文（不是雨）建立密友关系</title>
+  <style>
+    :root{--bg:#f7f9fc;--card:#ffffff;--accent:#ff6b6b;--muted:#888;}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans CJK SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial;background:var(--bg);height:100vh;margin:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .wrap{width:min(700px,94vw);background:var(--card);border-radius:12px;padding:28px 28px 98px;box-shadow:0 10px 30px rgba(20,30,40,.08);text-align:center;position:relative;overflow:hidden}
+    h1{margin:0 0 14px;font-size:20px}
+    .subtitle{color:var(--muted);margin-bottom:18px}
+    .options{display:flex;gap:14px;justify-content:center;align-items:flex-end;height:200px}
+    .option{width:120px;height:120px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;box-shadow:0 6px 18px rgba(20,30,40,.06);transition:transform 420ms cubic-bezier(.2,.9,.2,1),opacity 350ms,width 420ms,height 420ms,filter 350ms;background:linear-gradient(180deg,#fff,#fafafa);font-weight:600;font-size:16px;color:#222;border:2px solid rgba(0,0,0,.04);position:relative}
+    .option.couple{background:linear-gradient(180deg,#ffdada,#fff0f0);border-color:rgba(255,107,107,.18)}
+    /* 浪漫文字 */
+    .love-text{
+      position:absolute;top:100%;left:50%;transform:translate(-50%,6px);
+      margin-top:12px;font-size:26px;font-weight:700;
+      background:linear-gradient(45deg,#ff6b6b,#ff8e8e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      text-shadow:0 0 8px rgba(255,107,107,.4);
+      opacity:0;white-space:nowrap;transition:opacity 360ms,transform 360ms;
+    }
+    .love-text.show{opacity:1;transform:translate(-50%,0);}
+    /* 心跳动画 */
+    @keyframes heartbeat{
+      0%,100%{transform:scale(1)}
+      50%{transform:scale(1.08)}
+    }
+    .heartbeat{animation:heartbeat .6s ease-in-out 2}
+
+    /* 玫瑰/爱心掉落 */
+    .rose,.heart{position:absolute;font-size:28px;pointer-events:none;animation:fall 2.8s linear forwards}
+    @keyframes fall{
+      0%{opacity:0;transform:translateY(-20px) scale(.7) rotate(0)}
+      20%{opacity:1}
+      100%{transform:translateY(400px) scale(1.3) rotate(180deg);opacity:0}
+    }
+    @media (max-width:520px){.options{gap:10px}.option{width:88px;height:88px;font-size:14px}}
+  </style>
+</head>
+<body>
+  <div class="wrap" id="wrap">
+    <h1>邀请彭诗语（不是雨）建立密友关系</h1>
+    <div class="subtitle">请选择你想邀请的关系</div>
+
+    <div class="options" id="options">
+      <div class="option couple" id="opt-couple">
+        情侣
+        <div class="love-text" id="loveText">爱老虎油</div>
+      </div>
+      <div class="option" id="opt-girlf">闺蜜</div>
+      <div class="option" id="opt-bro">基友</div>
+      <div class="option" id="opt-best">死党</div>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    const maxClicks = 4;
+    let count = 0;
+    const couple = document.getElementById('opt-couple');
+    const others = [
+      document.getElementById('opt-girlf'),
+      document.getElementById('opt-bro'),
+      document.getElementById('opt-best')
+    ];
+    const loveText = document.getElementById('loveText');
+    const wrap = document.getElementById('wrap');
+
+    /* 通用掉落：玫瑰/爱心随机切换 */
+    function addDrop(){
+      const d = document.createElement('div');
+      d.className = Math.random()>.5?'rose':'heart';
+      d.textContent = d.className==='rose'?'🌹':'❤';
+      d.style.left = Math.random() * 90 + '%';
+      d.style.top = '-30px';
+      wrap.appendChild(d);
+      setTimeout(()=>d.remove(),3000);
+    }
+    /* 超级雨 */
+    function rainDrops(){
+      let n = 35;
+      const timer = setInterval(()=>{
+        addDrop();
+        if(--n <= 0) clearInterval(timer);
+      },120);
+    }
+
+    /* 进入终点 */
+    function enterRomance(){
+      loveText.classList.add('show');
+      couple.classList.add('heartbeat');
+      rainDrops();
+    }
+
+    /* 统一更新尺寸 */
+    function applyScales(){
+      const coupleScale = 1 + 0.28 * count;
+      couple.style.transform = `scale(${coupleScale})`;
+
+      const otherScale = Math.max(0.12, 1 - 0.22 * count);
+      others.forEach(o=>{
+        if(count >= maxClicks){          // 第4次后消失
+          o.style.opacity = '0';
+          o.style.pointerEvents = 'none';
+          o.style.transform = 'scale(0.01)';
+          o.style.width = '0';
+          o.style.height = '0';
+        }else{
+          o.style.opacity = otherScale < 0.2 ? '0.18' : '1';
+          o.style.transform = `scale(${otherScale})`;
+          o.style.pointerEvents = 'auto';
+          o.style.width = '';
+          o.style.height = '';
+        }
+      });
+
+      /* 只剩情侣时显示浪漫文字 */
+      if(count >= maxClicks){
+        couple.style.transform = 'scale(1.6)';
+        enterRomance();
+      }else{
+        loveText.classList.remove('show');
+      }
+    }
+
+    /* 情侣点击：第一次就直接浪漫；4次后再点同样浪漫 */
+    couple.addEventListener('click',()=>{
+      if(count < maxClicks){          // 第一次点
+        count = maxClicks;            // 直接拉满
+        applyScales();
+        enterRomance();
+      }else{                          // 4次后再点
+        couple.animate([{transform:'scale(1.6)'},{transform:'scale(1.75)'},{transform:'scale(1.6)'}],{duration:450});
+        rainDrops();
+      }
+    });
+
+    /* 闺蜜/基友/死党点击 */
+    others.forEach(o=>o.addEventListener('click',()=>{
+      if(count >= maxClicks) return;
+      count++;
+      applyScales();
+      addDrop();
+    }));
+
+    /* 初始化 */
+    applyScales();
+
+    /* 键盘彩蛋 */
+    window.addEventListener('keydown',e=>{
+      if(['1','2','3'].includes(e.key)){
+        const idx = Number(e.key)-1;
+        if(others[idx]) others[idx].click();
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
